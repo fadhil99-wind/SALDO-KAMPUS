@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SaldoKampus — Catat Uang Kuliahmu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ============ TOP NAV ============ -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <span class="brand-mark">💸</span>
+      <span class="brand-name">SaldoKampus</span>
+    </div>
+    <nav class="tabs" id="tabs">
+      <button class="tab-btn active" data-view="dashboard">Dashboard</button>
+      <button class="tab-btn" data-view="transaksi">Transaksi</button>
+      <button class="tab-btn" data-view="laporan">Laporan</button>
+      <button class="tab-btn" data-view="budget">Budget</button>
+    </nav>
+    <button class="btn btn-primary btn-add-top" id="openAddModalTop">+ Tambah</button>
+  </div>
+</header>
+
+<main class="app">
+
+  <!-- ============ DASHBOARD VIEW ============ -->
+  <section class="view active" id="view-dashboard">
+
+    <div class="receipt-hero">
+      <div class="receipt-card">
+        <div class="receipt-notch top"></div>
+        <p class="receipt-label">Saldo Kamu Sekarang</p>
+        <h1 class="receipt-amount" id="statSaldo">Rp0</h1>
+        <p class="receipt-sub" id="saldoSub">Belum ada transaksi tercatat</p>
+        <div class="receipt-line"></div>
+        <div class="receipt-mini-row">
+          <span>Diperbarui</span>
+          <span id="lastUpdated">—</span>
+        </div>
+        <div class="receipt-notch bottom"></div>
+      </div>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-card in">
+        <div class="stat-icon">↑</div>
+        <div>
+          <p class="stat-label">Total Pemasukan</p>
+          <p class="stat-value" id="statIncome">Rp0</p>
+        </div>
+      </div>
+      <div class="stat-card out">
+        <div class="stat-icon">↓</div>
+        <div>
+          <p class="stat-label">Total Pengeluaran</p>
+          <p class="stat-value" id="statExpense">Rp0</p>
+        </div>
+      </div>
+      <div class="stat-card today">
+        <div class="stat-icon">📅</div>
+        <div>
+          <p class="stat-label">Pengeluaran Hari Ini</p>
+          <p class="stat-value" id="statToday">Rp0</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="dash-columns">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Transaksi Terbaru</h2>
+          <button class="link-btn" data-goto="transaksi">Lihat semua →</button>
+        </div>
+        <div id="recentList" class="recent-list"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>💡 Insight Keuangan</h2>
+        </div>
+        <div id="insightList" class="insight-list"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TRANSAKSI VIEW ============ -->
+  <section class="view" id="view-transaksi">
+    <div class="panel-head page-head">
+      <h2>Riwayat Transaksi</h2>
+      <button class="btn btn-primary" id="openAddModalMid">+ Tambah Transaksi</button>
+    </div>
+
+    <div class="filter-bar">
+      <input type="text" id="searchInput" class="input" placeholder="🔍 Cari keterangan..." />
+      <select id="filterJenis" class="input">
+        <option value="">Semua Jenis</option>
+        <option value="pemasukan">Pemasukan</option>
+        <option value="pengeluaran">Pengeluaran</option>
+      </select>
+      <select id="filterKategori" class="input">
+        <option value="">Semua Kategori</option>
+      </select>
+      <input type="date" id="filterTanggal" class="input" />
+      <button class="btn btn-ghost" id="resetFilterBtn">Reset</button>
+    </div>
+
+    <div class="table-wrap">
+      <table class="tx-table">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Tanggal</th>
+            <th>Keterangan</th>
+            <th>Kategori</th>
+            <th>Jenis</th>
+            <th>Pemasukan</th>
+            <th>Pengeluaran</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="txTableBody"></tbody>
+      </table>
+      <p class="empty-state" id="txEmptyState">Belum ada transaksi. Yuk catat yang pertama! 📝</p>
+    </div>
+  </section>
+
+  <!-- ============ LAPORAN VIEW ============ -->
+  <section class="view" id="view-laporan">
+    <div class="panel-head page-head">
+      <h2>Laporan Keuangan</h2>
+    </div>
+
+    <div class="report-controls panel">
+      <div class="report-period-row">
+        <label class="field">
+          <span>Periode</span>
+          <select id="reportPeriod" class="input">
+            <option value="harian">Laporan Harian</option>
+            <option value="mingguan">Laporan Mingguan</option>
+            <option value="bulanan" selected>Laporan Bulanan</option>
+            <option value="custom">Pilih Rentang Tanggal</option>
+          </select>
+        </label>
+        <label class="field" id="reportDateSingleWrap">
+          <span>Tanggal</span>
+          <input type="date" id="reportDateSingle" class="input" />
+        </label>
+        <label class="field" id="reportMonthWrap">
+          <span>Bulan</span>
+          <input type="month" id="reportMonth" class="input" />
+        </label>
+        <label class="field" id="reportRangeStartWrap" style="display:none">
+          <span>Dari</span>
+          <input type="date" id="reportRangeStart" class="input" />
+        </label>
+        <label class="field" id="reportRangeEndWrap" style="display:none">
+          <span>Sampai</span>
+          <input type="date" id="reportRangeEnd" class="input" />
+        </label>
+        <label class="field">
+          <span>Nama (opsional)</span>
+          <input type="text" id="reportName" class="input" placeholder="Nama kamu" />
+        </label>
+        <button class="btn btn-primary" id="generateReportBtn">Tampilkan Laporan</button>
+      </div>
+    </div>
+
+    <div id="reportResult" class="report-result" style="display:none">
+      <div class="report-title-block">
+        <h3>LAPORAN KEUANGAN MAHASISWA</h3>
+        <p id="reportNameLine"></p>
+        <p id="reportPeriodLine"></p>
+      </div>
+
+      <div class="table-wrap">
+        <table class="tx-table">
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>Tanggal</th>
+              <th>Keterangan</th>
+              <th>Kategori</th>
+              <th>Jenis</th>
+              <th>Pemasukan</th>
+              <th>Pengeluaran</th>
+              <th>Saldo</th>
+            </tr>
+          </thead>
+          <tbody id="reportTableBody"></tbody>
+        </table>
+        <p class="empty-state" id="reportEmptyState" style="display:none">Tidak ada transaksi pada periode ini.</p>
+      </div>
+
+      <div class="summary-box">
+        <h3>Ringkasan Keuangan</h3>
+        <div class="summary-row"><span>Total Pemasukan</span><strong class="pos" id="sumIncome">Rp0</strong></div>
+        <div class="summary-row"><span>Total Pengeluaran</span><strong class="neg" id="sumExpense">Rp0</strong></div>
+        <div class="summary-row total"><span>Saldo Akhir</span><strong id="sumFinal">Rp0</strong></div>
+      </div>
+
+      <button class="btn btn-primary btn-download" id="downloadXlsxBtn">⬇ Download Spreadsheet (.xlsx)</button>
+    </div>
+  </section>
+
+  <!-- ============ BUDGET VIEW ============ -->
+  <section class="view" id="view-budget">
+    <div class="panel-head page-head">
+      <h2>Budget Bulanan</h2>
+    </div>
+
+    <div class="panel budget-panel">
+      <label class="field">
+        <span>Atur budget bulan ini</span>
+        <div class="budget-input-row">
+          <input type="number" id="budgetInput" class="input" placeholder="Contoh: 2000000" min="0" />
+          <button class="btn btn-primary" id="saveBudgetBtn">Simpan</button>
+        </div>
+      </label>
+
+      <div class="budget-summary">
+        <div class="budget-stat">
+          <span>Total Budget</span>
+          <strong id="budgetTotal">Rp0</strong>
+        </div>
+        <div class="budget-stat">
+          <span>Terpakai</span>
+          <strong id="budgetUsed">Rp0</strong>
+        </div>
+        <div class="budget-stat">
+          <span>Sisa</span>
+          <strong id="budgetLeft">Rp0</strong>
+        </div>
+      </div>
+
+      <div class="progress-wrap">
+        <div class="progress-track">
+          <div class="progress-fill" id="budgetProgressFill" style="width:0%"></div>
+        </div>
+        <p class="progress-text" id="budgetProgressText">0% terpakai</p>
+      </div>
+
+      <div id="budgetWarning" class="budget-warning" style="display:none"></div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ MODAL TAMBAH/EDIT TRANSAKSI ============ -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="modalTitle">Tambah Transaksi</h3>
+      <button class="modal-close" id="closeModalBtn">✕</button>
+    </div>
+    <form id="txForm" class="modal-form">
+      <input type="hidden" id="txId" />
+
+      <div class="jenis-toggle">
+        <button type="button" class="jenis-btn active" data-jenis="pemasukan" id="jenisIn">↑ Pemasukan</button>
+        <button type="button" class="jenis-btn" data-jenis="pengeluaran" id="jenisOut">↓ Pengeluaran</button>
+      </div>
+
+      <label class="field">
+        <span>Nominal (Rp)</span>
+        <input type="number" id="txNominal" class="input" min="1" required placeholder="Contoh: 15000" />
+      </label>
+
+      <label class="field">
+        <span>Kategori</span>
+        <select id="txKategori" class="input" required></select>
+      </label>
+
+      <label class="field">
+        <span>Keterangan</span>
+        <input type="text" id="txKeterangan" class="input" required placeholder="Contoh: Makan siang di kantin" />
+      </label>
+
+      <label class="field">
+        <span>Tanggal</span>
+        <input type="date" id="txTanggal" class="input" required />
+      </label>
+
+      <button type="submit" class="btn btn-primary btn-full">Simpan Transaksi</button>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
